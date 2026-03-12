@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
-import { AuthContext } from './context/AuthContext';
-import DashBoard from './pages/DashBoard';
-import Loginform from './pages/Loginform';
-import './global.css';
+import React, { useContext } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthContext } from "./context/AuthContext";
+
+import DashBoard from "./pages/DashBoard";
+import Loginform from "./pages/Loginform";
+import Registerform from "./pages/Registerform";
 
 function App() {
+
   const { isAuthenticated, loading } = useContext(AuthContext);
 
   if (loading) {
@@ -17,9 +20,43 @@ function App() {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
-      {isAuthenticated ? <DashBoard /> : <Loginform />}
-    </div>
+    <BrowserRouter>
+
+      <Routes>
+
+        {/* Login Route */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" />
+              : <Loginform />
+          }
+        />
+
+        {/* Register Route */}
+        <Route
+          path="/register"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" />
+              : <Registerform />
+          }
+        />
+
+        {/* Dashboard Route (Protected) */}
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated
+              ? <DashBoard />
+              : <Navigate to="/" />
+          }
+        />
+
+      </Routes>
+
+    </BrowserRouter>
   );
 }
 

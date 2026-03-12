@@ -3,17 +3,21 @@ import { Box, Stack, Tooltip, Divider, Menu, MenuItem, ListItemIcon, Typography 
 import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
 import { STATUS_OPTIONS } from "../../context/ChatContext";
+import { AuthContext } from "../../context/AuthContext";
 
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BoltIcon from "@mui/icons-material/Bolt";
 import CustomAvatar from "../common/avatar";
 import { SidebarIconButton } from "../common/buttons";
+import { useContext } from "react";
 
 const Sidebar = () => {
   const { user } = useAuth();
+  const { logout } = useContext(AuthContext);
   const { activeTab, setActiveTab, userStatus, setUserStatus, isOnline } = useChat();
 
   const [statusMenuAnchor, setStatusMenuAnchor] = React.useState(null);
@@ -22,7 +26,7 @@ const Sidebar = () => {
     user?.avatar ||
     user?.profilePicture ||
     user?.photoURL ||
-    "https://i.pravatar.cc/150?img=47";
+    undefined;  // no hard‑coded fallback — CustomAvatar shows initials instead
   const avatarAlt = user?.name || user?.username || "User";
 
   const currentStatus = STATUS_OPTIONS.find((s) => s.value === userStatus) ?? STATUS_OPTIONS[0];
@@ -107,8 +111,35 @@ const Sidebar = () => {
         </Stack>
       </Stack>
 
-      {/* Bottom: status dot + avatar */}
+      {/* Bottom: logout + status dot + avatar */}
       <Stack direction="column" alignItems="center" spacing={2.5}>
+        {/* Logout button */}
+        <Tooltip title="Log out" placement="right">
+          <Box
+            id="logout-btn"
+            onClick={logout}
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: "12px",
+              background: "#f1f5f9",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              "&:hover": {
+                background: "#fee2e2",
+                transform: "scale(1.08)",
+                "& svg": { color: "#ef4444" },
+              },
+              "&:active": { transform: "scale(0.95)" },
+            }}
+          >
+            <LogoutOutlinedIcon sx={{ fontSize: 18, color: "#94a3b8", transition: "color 0.2s" }} />
+          </Box>
+        </Tooltip>
+
         {/* Status toggle button — shows current colour, click to cycle/open menu */}
         <Tooltip title={`Status: ${currentStatus.label}`} placement="right">
           <Box
